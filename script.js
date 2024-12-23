@@ -6,6 +6,7 @@ const category = document.getElementById("category");
 
 //Seleciona os elementos da lista
 const expenseList = document.querySelector("ul");
+const expensesTotal = document.querySelector("aside header h2");
 const expenseQuantity = document.querySelector("aside header p span");
 
 // (METODO) - Captura o evento de input para formatar o valor
@@ -108,13 +109,52 @@ function expenseAdd(newExpense) {
 // Atualiza os totais
 function updateTotals() {
   try {
+    //Recuperar todo os Items (li) da lista (ul)
     const items = expenseList.children;
-    // Atualiza quantidade de itens da lista
 
+    // Atualiza quantidade de itens da lista
     expenseQuantity.textContent = `${items.length}  ${
       items.length > 1 ? "despesas" : "despesa"
     } `;
-    //Recuperar todo os Items (li) da lista (ul)
+
+    // Variavel para incrementar o total
+    let total = 0;
+
+    //  Percorre cada item (LI) da lista (UL)
+    for (let item = 0; item < items.length; item++) {
+      const itemAmount = items[item].querySelector(".expense-amount");
+
+      //Removendo caracteres não númericos e substitui a virgula pelo ponto.
+      let value = itemAmount.textContent
+        .replace(/[^\d,]/g, "")
+        .replace(",", ".");
+
+      value = parseFloat(value);
+
+      //Verifica se é um número valido.
+
+      if (isNaN(value)) {
+        return alert("Não foi possível  ");
+      }
+
+      // Incrementar o valor total
+
+      total += Number(value);
+    }
+
+    //cria span para adicionar o R$ formatado
+
+    const symbolBRL = document.createElement("small");
+    symbolBRL.textContent = "R$";
+
+    //Formata o valor e remove o R$ que será exibido pela small com um estilo costumizado.
+    total = formatCurrencyBRL(total).toUpperCase().replace("R$", "");
+
+    // Limpa o conteudo do elemento
+    expensesTotal.innerHTML = "";
+
+    //Adiciona o símbolo da moeda e do valor formatado.
+    expensesTotal.append(symbolBRL, total);
   } catch (error) {
     console.log(error);
     alert("Não foi possivel atualizar os totais");
